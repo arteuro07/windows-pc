@@ -53,7 +53,15 @@ def trade(side):
     res = mt5.order_send(req)
     log(f"ordre {'BUY' if side > 0 else 'SELL'} @ {price} -> {res.retcode if res else mt5.last_error()}")
 
-if not mt5.initialize(path=PATH, login=LOGIN, password=PASSWORD, server=SERVER):
+ok = False
+for i in range(4):
+    ok = mt5.initialize(path=PATH, login=LOGIN, password=PASSWORD, server=SERVER, timeout=120000)
+    if ok:
+        break
+    log(f"tentative {i+1} echec: {mt5.last_error()}")
+    mt5.shutdown()
+    time.sleep(20)
+if not ok:
     log(f"connexion impossible: {mt5.last_error()}")
     sys.exit(1)
 acc = mt5.account_info()
