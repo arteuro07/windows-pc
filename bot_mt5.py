@@ -45,8 +45,8 @@ def trade(side):
         "action": mt5.TRADE_ACTION_DEAL, "symbol": SYMBOL, "volume": LOT,
         "type": mt5.ORDER_TYPE_BUY if side > 0 else mt5.ORDER_TYPE_SELL,
         "price": price,
-        "sl": round(price * (1 - side * SL_PCT), 2),
-        "tp": round(price * (1 + side * TP_PCT), 2),
+        "sl": round(price * (1 - side * SL_PCT), mt5.symbol_info(SYMBOL).digits),
+        "tp": round(price * (1 + side * TP_PCT), mt5.symbol_info(SYMBOL).digits),
         "deviation": 20, "magic": 2026, "comment": "ART_EURO demo",
         "type_time": mt5.ORDER_TIME_GTC, "type_filling": mt5.ORDER_FILLING_IOC,
     }

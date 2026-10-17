@@ -5,6 +5,9 @@ on:
       minutes:
         description: "Duree en minutes"
         default: "5"
+      symbole:
+        description: "Symbole (XAUUSD, EURUSD, BTCUSD...)"
+        default: "XAUUSD"
 jobs:
   bot:
     runs-on: windows-latest
@@ -28,7 +31,7 @@ jobs:
           MT5_PASSWORD: ${{ secrets.MT5_PASSWORD }}
           MT5_SERVER: ${{ secrets.MT5_SERVER }}
           MINUTES: ${{ inputs.minutes }}
-          SYMBOL: BTCUSD
+          SYMBOL: ${{ inputs.symbole }}
         run: python bot_mt5.py
       - name: Résultats
         if: always()
