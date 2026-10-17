@@ -211,10 +211,18 @@ log(f"{len(names)} actifs negociables surveilles")
 report.send(0, len(names), MINUTES, ACTIVE, MAGICS)
 
 last, end, tick_log = {}, time.time() + MINUTES * 60, 0
+tick_seen = {}
 while time.time() < end:
     ticks = {n: mt5.symbol_info_tick(n) for n in names}
-    ref = max((t.time for t in ticks.values() if t), default=0)
-    opened = [n for n, t in ticks.items() if t and ref - t.time < 300]
+    wall = time.time()
+    for n, t in ticks.items():
+        if not t:
+            continue
+        if n not in tick_seen:
+            tick_seen[n] = [t.time_msc, 0.0]
+        elif tick_seen[n][0] != t.time_msc:
+            tick_seen[n] = [t.time_msc, wall]
+    opened = [n for n in names if n in tick_seen and wall - tick_seen[n][1] < 300]
     eq = mt5.account_info().equity
     held = {p.symbol for p in (mt5.positions_get() or []) if p.magic in MAGICS.values()}
     if time.time() - tick_log > 60:
