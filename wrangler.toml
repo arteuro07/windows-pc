@@ -1,3 +1,7 @@
 name = "mt5-panel"
 main = "worker.js"
 compatibility_date = "2026-10-01"
+
+[[kv_namespaces]]
+binding = "STATE"
+id = "e418237e0f8d4a79948f1d4da588ce20"

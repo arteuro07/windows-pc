@@ -1,5 +1,6 @@
 import os, sys, time
 import MetaTrader5 as mt5
+import report
 
 LOGIN = int(os.environ["MT5_LOGIN"])
 PASSWORD = os.environ["MT5_PASSWORD"]
@@ -20,6 +21,7 @@ os.makedirs("out", exist_ok=True)
 def log(m):
     line = time.strftime("%H:%M:%S ") + m
     print(line, flush=True)
+    report.add_log(line)
     with open("out/bot.log", "a") as f:
         f.write(line + "\n")
 
@@ -206,6 +208,7 @@ names = names[:MAX_SYMBOLS]
 for n in names:
     mt5.symbol_select(n, True)
 log(f"{len(names)} actifs negociables surveilles")
+report.send(0, len(names), MINUTES, ACTIVE, MAGICS)
 
 last, end, tick_log = {}, time.time() + MINUTES * 60, 0
 while time.time() < end:
@@ -217,6 +220,7 @@ while time.time() < end:
     if time.time() - tick_log > 60:
         log(f"{len(opened)}/{len(names)} actifs ouverts, {len(held)} positions, equity {eq}")
         tick_log = time.time()
+        report.send(len(opened), len(names), MINUTES, ACTIVE, MAGICS)
     if eq < start_eq * (1 - STOP_DD):
         log("perte maximale atteinte, plus d'ordres")
         break
@@ -231,4 +235,5 @@ while time.time() < end:
                     held.add(n)
     time.sleep(10)
 log(f"fin, solde {mt5.account_info().balance}")
+report.send(len(opened), len(names), MINUTES, ACTIVE, MAGICS, finished=True)
 mt5.shutdown()
