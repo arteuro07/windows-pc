@@ -9,7 +9,9 @@ CATS = [c.strip().lower() for c in os.environ.get("CATEGORIES", "Forex,Metals,Cr
 ACTIVE = [s.strip() for s in os.environ.get("STRATEGIES", "booster,ema").split(",") if s.strip()]
 MAX_SYMBOLS = int(os.environ.get("MAX_SYMBOLS", "80"))
 MAX_POS = int(os.environ.get("MAX_POS", "5"))
-ADX_MIN = 20
+TF_MAP = {"M1": mt5.TIMEFRAME_M1, "M5": mt5.TIMEFRAME_M5, "M15": mt5.TIMEFRAME_M15}
+TF_B = TF_MAP[os.environ.get("BOOSTER_TF", "M5")]
+EMA_FAST, EMA_SLOW, RSI_LEN, ADX_LEN, ADX_TH, ATR_LEN = 3, 8, 5, 14, 15.0, 14
 STOP_DD = 0.05
 MAGICS = {"booster": 2027, "ema": 2026}
 PATH = r"C:\Program Files\MetaTrader 5\terminal64.exe"
@@ -29,18 +31,29 @@ def ema_series(vals, n):
         out.append(e)
     return out
 
-def atr(r, n=14):
-    trs = [max(r[i]["high"] - r[i]["low"], abs(r[i]["high"] - r[i-1]["close"]), abs(r[i]["low"] - r[i-1]["close"])) for i in range(1, len(r))]
-    return sum(trs[-n:]) / n
+def true_ranges(r):
+    return [max(r[i]["high"] - r[i]["low"], abs(r[i]["high"] - r[i-1]["close"]), abs(r[i]["low"] - r[i-1]["close"])) for i in range(1, len(r))]
 
-def rsi(c, n=14):
+def atr_rma(r, n=14):
+    trs = true_ranges(r)
+    a = sum(trs[:n]) / n
+    for x in trs[n:]:
+        a = (a * (n - 1) + x) / n
+    return a
+
+def rsi_series(c, n):
+    out = [50.0] * len(c)
+    if len(c) <= n:
+        return out
     g = [max(c[i] - c[i-1], 0) for i in range(1, len(c))]
     l = [max(c[i-1] - c[i], 0) for i in range(1, len(c))]
     ag, al = sum(g[:n]) / n, sum(l[:n]) / n
+    out[n] = 100.0 if al == 0 else 100 - 100 / (1 + ag / al)
     for i in range(n, len(g)):
         ag = (ag * (n - 1) + g[i]) / n
         al = (al * (n - 1) + l[i]) / n
-    return 100.0 if al == 0 else 100 - 100 / (1 + ag / al)
+        out[i + 1] = 100.0 if al == 0 else 100 - 100 / (1 + ag / al)
+    return out
 
 def wilder(vals, n):
     s = sum(vals[:n])
@@ -50,7 +63,7 @@ def wilder(vals, n):
         out.append(s)
     return out
 
-def adx(r, n=14):
+def adx_list(r, n=14):
     h = [x["high"] for x in r]
     lo = [x["low"] for x in r]
     c = [x["close"] for x in r]
@@ -69,42 +82,68 @@ def adx(r, n=14):
         pi, mi = 100 * b / a, 100 * d / a
         dx.append(100 * abs(pi - mi) / (pi + mi) if pi + mi else 0.0)
     if len(dx) < n:
-        return 0.0
+        return []
     v = sum(dx[:n]) / n
+    out = [v]
     for x in dx[n:]:
         v = (v * (n - 1) + x) / n
-    return v
+        out.append(v)
+    return out
 
 NONE = (0, 0, 0, 0, 0)
+seen = {}
+
+def new_bar(name, tf):
+    cur = mt5.copy_rates_from_pos(name, tf, 0, 1)
+    if cur is None or len(cur) == 0:
+        return False
+    t = int(cur[0]["time"])
+    if seen.get((name, tf)) == t:
+        return False
+    seen[(name, tf)] = t
+    return True
+
+def sig_booster(name):
+    if not new_bar(name, TF_B):
+        return NONE
+    r = mt5.copy_rates_from_pos(name, TF_B, 1, 300)
+    if r is None or len(r) < 100:
+        return NONE
+    c = [x["close"] for x in r]
+    ef, es, rs = ema_series(c, EMA_FAST), ema_series(c, EMA_SLOW), rsi_series(c, RSI_LEN)
+    ad = adx_list(r, ADX_LEN)
+    if len(ad) < 3:
+        return NONE
+    a = atr_rma(r, ATR_LEN)
+    t = int(r[-1]["time"])
+
+    def bull(i):
+        ok = ad[i] >= ADX_TH or ad[i] > ad[i-1]
+        return ef[i] > es[i] and c[i] > ef[i] and rs[i] > 50 and rs[i] > rs[i-1] and ok
+
+    def bear(i):
+        ok = ad[i] >= ADX_TH or ad[i] > ad[i-1]
+        return ef[i] < es[i] and c[i] < ef[i] and rs[i] < 50 and rs[i] < rs[i-1] and ok
+
+    if bull(-1) and not bull(-2):
+        return 1, t, a, 1.2, 2.0
+    if bear(-1) and not bear(-2):
+        return -1, t, a, 1.2, 2.0
+    return NONE
 
 def sig_ema(name):
+    if not new_bar(name, mt5.TIMEFRAME_M15):
+        return NONE
     r = mt5.copy_rates_from_pos(name, mt5.TIMEFRAME_M15, 1, 100)
     if r is None or len(r) < 60:
         return NONE
     c = [x["close"] for x in r]
     f, s = ema_series(c, 9), ema_series(c, 21)
-    t, a = int(r[-1]["time"]), atr(r)
+    t, a = int(r[-1]["time"]), atr_rma(r)
     if f[-2] <= s[-2] and f[-1] > s[-1]:
         return 1, t, a, 1.5, 3.0
     if f[-2] >= s[-2] and f[-1] < s[-1]:
         return -1, t, a, 1.5, 3.0
-    return NONE
-
-def sig_booster(name):
-    r = mt5.copy_rates_from_pos(name, mt5.TIMEFRAME_M5, 1, 200)
-    if r is None or len(r) < 100:
-        return NONE
-    c = [x["close"] for x in r]
-    f, s = ema_series(c, 5), ema_series(c, 13)
-    d = [x - y for x, y in zip(f, s)]
-    t, a = int(r[-1]["time"]), atr(r)
-    if a <= 0 or adx(r) < ADX_MIN:
-        return NONE
-    rs = rsi(c)
-    if d[-1] > 0 and min(d[-3:-1]) <= 0 and 50 < rs < 70:
-        return 1, t, a, 1.2, 2.0
-    if d[-1] < 0 and max(d[-3:-1]) >= 0 and 30 < rs < 50:
-        return -1, t, a, 1.2, 2.0
     return NONE
 
 STRATS = {"booster": sig_booster, "ema": sig_ema}
@@ -168,14 +207,16 @@ for n in names:
     mt5.symbol_select(n, True)
 log(f"{len(names)} actifs negociables surveilles")
 
-last, end = {}, time.time() + MINUTES * 60
+last, end, tick_log = {}, time.time() + MINUTES * 60, 0
 while time.time() < end:
     ticks = {n: mt5.symbol_info_tick(n) for n in names}
     ref = max((t.time for t in ticks.values() if t), default=0)
     opened = [n for n, t in ticks.items() if t and ref - t.time < 300]
     eq = mt5.account_info().equity
     held = {p.symbol for p in (mt5.positions_get() or []) if p.magic in MAGICS.values()}
-    log(f"{len(opened)}/{len(names)} actifs ouverts, {len(held)} positions, equity {eq}")
+    if time.time() - tick_log > 60:
+        log(f"{len(opened)}/{len(names)} actifs ouverts, {len(held)} positions, equity {eq}")
+        tick_log = time.time()
     if eq < start_eq * (1 - STOP_DD):
         log("perte maximale atteinte, plus d'ordres")
         break
@@ -188,6 +229,6 @@ while time.time() < end:
                 last[(n, st)] = t
                 if trade(n, side, a, slm, tpm, eq, st):
                     held.add(n)
-    time.sleep(60)
+    time.sleep(10)
 log(f"fin, solde {mt5.account_info().balance}")
 mt5.shutdown()
