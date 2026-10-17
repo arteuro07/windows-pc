@@ -4,10 +4,10 @@ import MetaTrader5 as mt5
 LOGIN = int(os.environ["MT5_LOGIN"])
 PASSWORD = os.environ["MT5_PASSWORD"]
 SERVER = os.environ["MT5_SERVER"]
-SYMBOL = os.environ.get("SYMBOL", "XAUUSD")
-MINUTES = int(os.environ.get("MINUTES", "10"))
+SYMBOL = os.environ.get("SYMBOL", "BTCUSD")
+MINUTES = int(os.environ.get("MINUTES", "5"))
 LOT, FAST, SLOW = 0.01, 9, 21
-SL_PTS, TP_PTS = 500, 1000
+SL_PCT, TP_PCT = 0.005, 0.01
 PATH = r"C:\Program Files\MetaTrader 5\terminal64.exe"
 os.makedirs("out", exist_ok=True)
 
@@ -40,13 +40,13 @@ def cross():
 
 def trade(side):
     tick = mt5.symbol_info_tick(SYMBOL)
-    p = mt5.symbol_info(SYMBOL).point
     price = tick.ask if side > 0 else tick.bid
     req = {
         "action": mt5.TRADE_ACTION_DEAL, "symbol": SYMBOL, "volume": LOT,
         "type": mt5.ORDER_TYPE_BUY if side > 0 else mt5.ORDER_TYPE_SELL,
         "price": price,
-        "sl": price - side * SL_PTS * p, "tp": price + side * TP_PTS * p,
+        "sl": round(price * (1 - side * SL_PCT), 2),
+        "tp": round(price * (1 + side * TP_PCT), 2),
         "deviation": 20, "magic": 2026, "comment": "ART_EURO demo",
         "type_time": mt5.ORDER_TIME_GTC, "type_filling": mt5.ORDER_FILLING_IOC,
     }
@@ -61,8 +61,11 @@ if acc.trade_mode != mt5.ACCOUNT_TRADE_MODE_DEMO:
     log("compte non demo, arret")
     mt5.shutdown()
     sys.exit(1)
-log(f"connecte demo {acc.login}, solde {acc.balance}")
-mt5.symbol_select(SYMBOL, True)
+log(f"connecte demo {acc.login}, solde {acc.balance}, symbole {SYMBOL}")
+if not mt5.symbol_select(SYMBOL, True):
+    log(f"symbole introuvable: {SYMBOL}")
+    mt5.shutdown()
+    sys.exit(1)
 last, end = 0, time.time() + MINUTES * 60
 while time.time() < end:
     side, t = cross()
