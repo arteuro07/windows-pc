@@ -64,6 +64,7 @@ if acc.trade_mode != mt5.ACCOUNT_TRADE_MODE_DEMO:
 log(f"connecte demo {acc.login}, solde {acc.balance}, symbole {SYMBOL}")
 if not mt5.symbol_select(SYMBOL, True):
     log(f"symbole introuvable: {SYMBOL}")
+    log("symboles BTC: " + ", ".join(s.name for s in (mt5.symbols_get("*BTC*") or [])))
     mt5.shutdown()
     sys.exit(1)
 last, end = 0, time.time() + MINUTES * 60
