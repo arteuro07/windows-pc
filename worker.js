@@ -167,7 +167,7 @@ function chipsBuild(id,items,multi,key){
 }
 chipsBuild('c_min',[[30,'30 min'],[60,'1 h'],[120,'2 h'],[240,'4 h'],[350,'≈ 6 h']],false,'min');
 chipsBuild('c_cat',[['Forex','Forex'],['Metals','Métaux'],['Crypto','Crypto'],['Indices','Indices'],['Stocks','Actions']],true,'cat');
-chipsBuild('c_str',[['booster','Scalping Booster'],['ema','EMA 9/21']],true,'str');
+chipsBuild('c_str',[['booster','Scalping Booster'],['ema','EMA 9/21'],['fvg','FVG Or']],true,'str');
 
 function chart(h,start){
   var svg=$('ch');
@@ -194,7 +194,7 @@ function chart(h,start){
 function row(sym,side,mid,pl){
   return '<div class="row"><div><b>'+esc(sym)+'</b><span class="tag '+(side==='BUY'?'buy':'sell')+'">'+esc(side)+'</span></div><div class="mut" style="font-size:13px">'+esc(mid)+'</div><div class="pl '+cl(pl)+'">'+sg(pl)+'</div></div>';
 }
-function stratName(s){return s==='booster'?'Booster':(s==='ema'?'EMA 9/21':s)}
+function stratName(s){return s==='booster'?'Booster':(s==='ema'?'EMA 9/21':(s==='fvg'?'FVG Or':s))}
 
 function render(st,runs){
   var run=runs&&runs.length?runs[0]:null;
@@ -275,7 +275,7 @@ if(KEY){refresh().catch(function(){})}else{lock('')}
 </script></body></html>`;
 
 const CATS = ["Forex", "Metals", "Crypto", "Indices", "Stocks"];
-const STRS = ["booster", "ema"];
+const STRS = ["booster", "ema", "fvg"];
 const pick = (v, ok, d) => {
   const a = String(v || "").split(",").map((s) => s.trim()).filter((s) => ok.includes(s));
   return (a.length ? a : d).join(",");
