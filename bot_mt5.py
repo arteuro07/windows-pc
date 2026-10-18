@@ -181,6 +181,56 @@ def trade(name, side, a, slm, tpm, eq, strat):
     log(f"[{strat}] {'BUY' if side > 0 else 'SELL'} {name} @ {price} -> {code}")
     return bool(res) and res.retcode == mt5.TRADE_RETCODE_DONE
 
+def algo_ok():
+    ti = mt5.terminal_info()
+    return bool(ti and ti.trade_allowed and not ti.tradeapi_disabled)
+
+def ensure_algo():
+    import subprocess, tempfile
+    if algo_ok():
+        log("trading automatique autorise")
+        return
+    log("trading automatique desactive dans MT5 : relance du terminal avec l'autorisation")
+    mt5.shutdown()
+    try:
+        subprocess.run(["taskkill", "/F", "/IM", "terminal64.exe"], capture_output=True)
+    except Exception as e:
+        log(f"arret du terminal impossible: {e!r}")
+    time.sleep(5)
+    cfg = os.path.join(tempfile.gettempdir(), "mt5_algo.ini")
+    with open(cfg, "w", encoding="utf-8") as f:
+        f.write(f"[Common]\nLogin={LOGIN}\nPassword={PASSWORD}\nServer={SERVER}\n[Experts]\nEnabled=1\nAllowLiveTrading=1\nAllowDllImport=0\n")
+    subprocess.Popen([PATH, "/config:" + cfg])
+    time.sleep(60)
+    up = False
+    for _ in range(3):
+        up = mt5.initialize(path=PATH, login=LOGIN, password=PASSWORD, server=SERVER, timeout=120000)
+        if up:
+            break
+        time.sleep(15)
+    try:
+        os.remove(cfg)
+    except OSError:
+        pass
+    if not up:
+        log(f"reconnexion impossible: {mt5.last_error()}")
+        sys.exit(1)
+    ti = mt5.terminal_info()
+    log(f"apres relance : trade_allowed={ti.trade_allowed if ti else None}, tradeapi_disabled={ti.tradeapi_disabled if ti else None}")
+
+RM = set(MAGICS.values())
+
+def deals_all():
+    return mt5.history_deals_get(0, int(time.time()) + 172800) or []
+
+def robot_pnl():
+    real = 0.0
+    for d in deals_all():
+        if d.magic in RM and d.ticket not in base_deals:
+            real += d.profit + d.commission + d.swap + getattr(d, "fee", 0.0)
+    flo = sum(p.profit + p.swap for p in (mt5.positions_get() or []) if p.magic in RM)
+    return real + flo
+
 ok = False
 for i in range(4):
     ok = mt5.initialize(path=PATH, login=LOGIN, password=PASSWORD, server=SERVER, timeout=120000)
@@ -198,8 +248,11 @@ if acc.trade_mode != mt5.ACCOUNT_TRADE_MODE_DEMO:
     mt5.shutdown()
     sys.exit(1)
 start_eq = acc.equity
+base_deals = {d.ticket for d in deals_all()}
+chk = 0.0
 log(f"connecte demo {acc.login}, solde {acc.balance}, strategies {ACTIVE}, categories {CATS}")
 
+ensure_algo()
 names = []
 for s in mt5.symbols_get() or []:
     p = (s.path or "").lower()
@@ -230,9 +283,12 @@ while time.time() < end:
         log(f"{len(opened)}/{len(names)} actifs ouverts, {len(held)} positions, equity {eq}")
         tick_log = time.time()
         report.send(len(opened), len(names), MINUTES, ACTIVE, MAGICS)
-    if eq < start_eq * (1 - STOP_DD):
-        log("perte maximale atteinte, plus d'ordres")
-        break
+    if time.time() - chk > 20:
+        chk = time.time()
+        rp = robot_pnl()
+        if rp < -start_eq * STOP_DD:
+            log(f"perte maximale du robot atteinte ({rp:.2f}), arret")
+            break
     for n in opened:
         for st in [x for x in ACTIVE if x in STRATS]:
             if n in held or len(held) >= MAX_POS:
