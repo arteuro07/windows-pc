@@ -1,10 +1,17 @@
-14:43:36 XAUUSD booster: {"trades": 7325, "winrate_pct": 38.4, "total_R": -218.6, "avg_R": -0.03, "avg_cost_R": 0.046, "profit_factor": 0.95, "max_drawdown_R": 243.1, "R_par_an": {"2025": -27.9, "2026": -186.9}, "bougies": 79999, "debut": "2025-08-22"}
-14:43:48 XAUUSD ema: {"trades": 2150, "winrate_pct": 34.1, "total_R": -70.0, "avg_R": -0.033, "avg_cost_R": 0.051, "profit_factor": 0.95, "max_drawdown_R": 106.1, "R_par_an": {"2023": -30.4, "2024": -36.4, "2025": -15.0, "2026": 27.7}, "bougies": 79999, "debut": "2023-05-22"}
-14:43:52 EURUSD booster: {"trades": 7166, "winrate_pct": 35.8, "total_R": -2389.5, "avg_R": -0.333, "avg_cost_R": 0.281, "profit_factor": 0.6, "max_drawdown_R": 2394.4, "R_par_an": {"2025": -657.5, "2026": -1732.0}, "bougies": 79999, "debut": "2025-09-19"}
-14:43:52 EURUSD ema: {"trades": 2093, "winrate_pct": 31.8, "total_R": -367.2, "avg_R": -0.175, "avg_cost_R": 0.121, "profit_factor": 0.77, "max_drawdown_R": 383.4, "R_par_an": {"2023": -97.0, "2024": -156.5, "2025": -85.1, "2026": -33.7}, "bougies": 79999, "debut": "2023-07-27"}
-14:43:56 GBPUSD booster: {"trades": 7297, "winrate_pct": 36.2, "total_R": -2171.7, "avg_R": -0.298, "avg_cost_R": 0.261, "profit_factor": 0.63, "max_drawdown_R": 2177.6, "R_par_an": {"2025": -500.4, "2026": -1673.4}, "bougies": 79999, "debut": "2025-09-19"}
-14:43:57 GBPUSD ema: {"trades": 2118, "winrate_pct": 32.0, "total_R": -329.8, "avg_R": -0.156, "avg_cost_R": 0.111, "profit_factor": 0.79, "max_drawdown_R": 344.2, "R_par_an": {"2023": -33.2, "2024": -108.0, "2025": -90.4, "2026": -105.6}, "bougies": 79999, "debut": "2023-07-27"}
-14:44:01 USDJPY booster: {"trades": 7321, "winrate_pct": 36.8, "total_R": -1640.7, "avg_R": -0.224, "avg_cost_R": 0.194, "profit_factor": 0.71, "max_drawdown_R": 1649.2, "R_par_an": {"2025": -357.5, "2026": -1274.6}, "bougies": 79999, "debut": "2025-09-19"}
-14:44:01 USDJPY ema: {"trades": 2152, "winrate_pct": 33.1, "total_R": -193.1, "avg_R": -0.09, "avg_cost_R": 0.072, "profit_factor": 0.88, "max_drawdown_R": 201.7, "R_par_an": {"2023": -31.2, "2024": -10.1, "2025": -44.4, "2026": -118.8}, "bougies": 79999, "debut": "2023-07-27"}
-14:44:01 TOTAL booster: {"trades": 29109, "winrate_pct": 36.8, "total_R": -6420.6, "avg_R": -0.221, "avg_cost_R": 0.195, "profit_factor": 0.71, "max_drawdown_R": 6444.4, "R_par_an": {"2025": -1543.3, "2026": -4866.9}}
-14:44:01 TOTAL ema: {"trades": 8513, "winrate_pct": 32.8, "total_R": -960.1, "avg_R": -0.113, "avg_cost_R": 0.088, "profit_factor": 0.85, "max_drawdown_R": 964.3, "R_par_an": {"2023": -191.8, "2024": -311.0, "2025": -234.9, "2026": -230.4}}
+15:00:46 XAUUSD: M15 79999, M30 59999, H1 29999, H4 9999
+15:01:04 XAGUSD: M15 79999, M30 59999, H1 29999, H4 9999
+15:01:16 EURUSD: M15 79999, M30 59999, H1 29999, H4 9999
+15:01:27 GBPUSD: M15 79999, M30 59999, H1 29999, H4 9999
+15:01:39 USDJPY: M15 79999, M30 59999, H1 29999, H4 9999
+15:01:53 AUDUSD: M15 79999, M30 59999, H1 29999, H4 9999
+15:02:08 USDCAD: M15 79999, M30 59999, H1 29999, H4 9999
+15:02:20 USDCHF: M15 79999, M30 59999, H1 29999, H4 9999
+15:02:49 calcul termine en 29 s
+15:02:49 280 configurations testees
+15:02:49 positives a l'entrainement : 51 ; encore positives sur la periode jamais vue : 31
+15:02:49 candidates retenues (regles fixees a l'avance) : 4
+15:02:49 candidates qui tiennent sur la periode jamais vue : 2
+15:02:49 pullback H4 sl3 rev | ENTRAINEMENT n=306 R=68.9 pf=1.28 | JAMAIS VU n=73 R=-33.6 pf=0.45 | or jamais vu R=1.5 | par an {2023: -33.6, 2024: -8.8, 2025: 98.2, 2026: -23.8}
+15:02:49 pullback H1 sl2 rev | ENTRAINEMENT n=989 R=130.1 pf=1.15 | JAMAIS VU n=482 R=-99.9 pf=0.78 | or jamais vu R=20.6 | par an {2023: 9.4, 2024: 86.9, 2025: -143.1, 2026: -1.6}
+15:02:50 ema50/200 H4 sl1.5 tp6 | ENTRAINEMENT n=354 R=42.4 pf=1.15 | JAMAIS VU n=96 R=15.7 pf=1.21 | or jamais vu R=0.9 | par an {2023: 26.2, 2024: 14.9, 2025: -16.0, 2026: 33.1}
+15:02:50 ema50/200 H4 sl3 rev | ENTRAINEMENT n=365 R=41.8 pf=1.17 | JAMAIS VU n=96 R=75.7 pf=2.21 | or jamais vu R=29.5 | par an {2023: -9.2, 2024: 39.0, 2025: 105.6, 2026: -1.7}
