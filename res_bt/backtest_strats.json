@@ -1,0 +1,158 @@
+{
+ "XAUUSD/booster": {
+  "trades": 7325,
+  "winrate_pct": 38.4,
+  "total_R": -218.6,
+  "avg_R": -0.03,
+  "avg_cost_R": 0.046,
+  "profit_factor": 0.95,
+  "max_drawdown_R": 243.1,
+  "R_par_an": {
+   "2025": -27.9,
+   "2026": -186.9
+  },
+  "bougies": 79999,
+  "debut": "2025-08-22"
+ },
+ "XAUUSD/ema": {
+  "trades": 2150,
+  "winrate_pct": 34.1,
+  "total_R": -70.0,
+  "avg_R": -0.033,
+  "avg_cost_R": 0.051,
+  "profit_factor": 0.95,
+  "max_drawdown_R": 106.1,
+  "R_par_an": {
+   "2023": -30.4,
+   "2024": -36.4,
+   "2025": -15.0,
+   "2026": 27.7
+  },
+  "bougies": 79999,
+  "debut": "2023-05-22"
+ },
+ "EURUSD/booster": {
+  "trades": 7166,
+  "winrate_pct": 35.8,
+  "total_R": -2389.5,
+  "avg_R": -0.333,
+  "avg_cost_R": 0.281,
+  "profit_factor": 0.6,
+  "max_drawdown_R": 2394.4,
+  "R_par_an": {
+   "2025": -657.5,
+   "2026": -1732.0
+  },
+  "bougies": 79999,
+  "debut": "2025-09-19"
+ },
+ "EURUSD/ema": {
+  "trades": 2093,
+  "winrate_pct": 31.8,
+  "total_R": -367.2,
+  "avg_R": -0.175,
+  "avg_cost_R": 0.121,
+  "profit_factor": 0.77,
+  "max_drawdown_R": 383.4,
+  "R_par_an": {
+   "2023": -97.0,
+   "2024": -156.5,
+   "2025": -85.1,
+   "2026": -33.7
+  },
+  "bougies": 79999,
+  "debut": "2023-07-27"
+ },
+ "GBPUSD/booster": {
+  "trades": 7297,
+  "winrate_pct": 36.2,
+  "total_R": -2171.7,
+  "avg_R": -0.298,
+  "avg_cost_R": 0.261,
+  "profit_factor": 0.63,
+  "max_drawdown_R": 2177.6,
+  "R_par_an": {
+   "2025": -500.4,
+   "2026": -1673.4
+  },
+  "bougies": 79999,
+  "debut": "2025-09-19"
+ },
+ "GBPUSD/ema": {
+  "trades": 2118,
+  "winrate_pct": 32.0,
+  "total_R": -329.8,
+  "avg_R": -0.156,
+  "avg_cost_R": 0.111,
+  "profit_factor": 0.79,
+  "max_drawdown_R": 344.2,
+  "R_par_an": {
+   "2023": -33.2,
+   "2024": -108.0,
+   "2025": -90.4,
+   "2026": -105.6
+  },
+  "bougies": 79999,
+  "debut": "2023-07-27"
+ },
+ "USDJPY/booster": {
+  "trades": 7321,
+  "winrate_pct": 36.8,
+  "total_R": -1640.7,
+  "avg_R": -0.224,
+  "avg_cost_R": 0.194,
+  "profit_factor": 0.71,
+  "max_drawdown_R": 1649.2,
+  "R_par_an": {
+   "2025": -357.5,
+   "2026": -1274.6
+  },
+  "bougies": 79999,
+  "debut": "2025-09-19"
+ },
+ "USDJPY/ema": {
+  "trades": 2152,
+  "winrate_pct": 33.1,
+  "total_R": -193.1,
+  "avg_R": -0.09,
+  "avg_cost_R": 0.072,
+  "profit_factor": 0.88,
+  "max_drawdown_R": 201.7,
+  "R_par_an": {
+   "2023": -31.2,
+   "2024": -10.1,
+   "2025": -44.4,
+   "2026": -118.8
+  },
+  "bougies": 79999,
+  "debut": "2023-07-27"
+ },
+ "TOTAL/booster": {
+  "trades": 29109,
+  "winrate_pct": 36.8,
+  "total_R": -6420.6,
+  "avg_R": -0.221,
+  "avg_cost_R": 0.195,
+  "profit_factor": 0.71,
+  "max_drawdown_R": 6444.4,
+  "R_par_an": {
+   "2025": -1543.3,
+   "2026": -4866.9
+  }
+ },
+ "TOTAL/ema": {
+  "trades": 8513,
+  "winrate_pct": 32.8,
+  "total_R": -960.1,
+  "avg_R": -0.113,
+  "avg_cost_R": 0.088,
+  "profit_factor": 0.85,
+  "max_drawdown_R": 964.3,
+  "R_par_an": {
+   "2023": -191.8,
+   "2024": -311.0,
+   "2025": -234.9,
+   "2026": -230.4
+  }
+ }
+}
