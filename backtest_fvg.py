@@ -123,6 +123,8 @@ def stats(tr, sl_usd):
             "max_drawdown_R": round(dd / sl_usd, 1), "R_par_mois": by_m}
 
 def to_list(a):
+    if a is None:
+        return []
     return [{"time": int(x["time"]), "open": float(x["open"]), "high": float(x["high"]),
              "low": float(x["low"]), "close": float(x["close"])} for x in a]
 
@@ -149,9 +151,9 @@ def main():
         sys.exit(1)
     mt5.symbol_select(sym, True)
     time.sleep(5)
-    m15 = to_list(mt5.copy_rates_from_pos(sym, mt5.TIMEFRAME_M15, 0, 80000) or [])
-    h1 = to_list(mt5.copy_rates_from_pos(sym, mt5.TIMEFRAME_H1, 0, 20000) or [])
-    d1 = to_list(mt5.copy_rates_from_pos(sym, mt5.TIMEFRAME_D1, 0, 3000) or [])
+    m15 = to_list(mt5.copy_rates_from_pos(sym, mt5.TIMEFRAME_M15, 0, 80000))
+    h1 = to_list(mt5.copy_rates_from_pos(sym, mt5.TIMEFRAME_H1, 0, 20000))
+    d1 = to_list(mt5.copy_rates_from_pos(sym, mt5.TIMEFRAME_D1, 0, 3000))
     mt5.shutdown()
     m15, h1 = m15[:-1], h1[:-1]
     log(f"{sym}: M15 {len(m15)} bougies, H1 {len(h1)}, D1 {len(d1)}")
