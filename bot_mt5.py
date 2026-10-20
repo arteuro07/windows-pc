@@ -1,6 +1,7 @@
 import os, sys, time
 import MetaTrader5 as mt5
 import fvg
+import breakout
 import report
 
 LOGIN = int(os.environ["MT5_LOGIN"])
@@ -15,7 +16,7 @@ TF_MAP = {"M1": mt5.TIMEFRAME_M1, "M5": mt5.TIMEFRAME_M5, "M15": mt5.TIMEFRAME_M
 TF_B = TF_MAP[os.environ.get("BOOSTER_TF", "M5")]
 EMA_FAST, EMA_SLOW, RSI_LEN, ADX_LEN, ADX_TH, ATR_LEN = 3, 8, 5, 14, 15.0, 14
 STOP_DD = 0.05
-MAGICS = {"booster": 2027, "ema": 2026, "fvg": 2028}
+MAGICS = {"booster": 2027, "ema": 2026, "fvg": 2028, "brk": 2029}
 PATH = r"C:\Program Files\MetaTrader 5\terminal64.exe"
 os.makedirs("out", exist_ok=True)
 
@@ -300,6 +301,8 @@ while time.time() < end:
                     held.add(n)
     if "fvg" in ACTIVE:
         fvg.step(mt5, log, eq)
+    if "brk" in ACTIVE:
+        breakout.step(mt5, log, eq)
     time.sleep(10)
 log(f"fin, solde {mt5.account_info().balance}")
 report.send(len(opened), len(names), MINUTES, ACTIVE, MAGICS, finished=True)
