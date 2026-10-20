@@ -119,7 +119,7 @@ def per_year(tr):
 def grid(days, tag):
     rows = []
     for re_ in (5, 6, 7, 8, 9):
-        for ch in (18, 20, 22):
+        for ch in (11, 12, 13, 14, 16, 18, 20, 22):
             for slmode, slpct in (("pct", 0.5), ("pct", 1.0), ("pct", 1.5), ("range", 0)):
                 tr = simulate(days, 0, re_, ch, slmode, slpct, SPREAD)
                 a, b = split(tr)
@@ -133,6 +133,9 @@ def grid(days, tag):
         log(f"[{tag}] top  {r['cfg']}: all={r['all']} test={r['test']}")
     for r in sorted(rows, key=lambda r: (r["all"] or {"avgR": 9})["avgR"])[:2]:
         log(f"[{tag}] pire {r['cfg']}: all={r['all']}")
+    for r in rows:
+        if r['cfg'].startswith('fin7 ') and 'pct1.0' in r['cfg']:
+            log(f"[{tag}] SORTIE {r['cfg']}: all={r['all']} test={r['test']}")
     return rows
 
 def run_tf(bars, tag):
