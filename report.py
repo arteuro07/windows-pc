@@ -29,7 +29,8 @@ def send(opened, total, minutes, strategies, magics, finished=False):
             if d.magic in mine and d.entry == mt5.DEAL_ENTRY_OUT:
                 deals.append({"ticket": d.ticket, "symbol": d.symbol, "strat": by.get(d.magic, "?"),
                               "side": "BUY" if d.type == mt5.DEAL_TYPE_SELL else "SELL",
-                              "profit": round(d.profit + d.commission + d.swap, 2)})
+                              "profit": round(d.profit + d.commission + d.swap, 2),
+                              "time": d.time, "volume": d.volume, "price": d.price})
         body = {"run_id": RUN, "balance": a.balance, "equity": a.equity, "opened": opened, "total": total,
                 "minutes": minutes, "strategies": ",".join(strategies), "positions": pos,
                 "deals": deals[-100:], "log": list(_log), "finished": finished}

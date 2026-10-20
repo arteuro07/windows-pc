@@ -105,6 +105,7 @@ pre{margin:0;font:11.5px/1.6 var(--mono);color:#b9beb4;white-space:pre-wrap;word
         <div><div class="lbl">Meilleur / pire</div><b id="s_bw">—</b></div>
       </div>
       <table><thead><tr><th>Stratégie</th><th>Trades</th><th>Gagnants</th><th>Net</th></tr></thead><tbody id="s_tab"></tbody></table>
+      <button class="btn" id="dl" type="button" style="margin-top:16px;background:transparent;color:var(--gold)">Télécharger le relevé</button>
     </section>
 
     <section class="card">
@@ -197,6 +198,7 @@ function row(sym,side,mid,pl){
 function stratName(s){return s==='booster'?'Booster':(s==='ema'?'EMA 9/21':(s==='fvg'?'FVG Or':s))}
 
 function render(st,runs){
+  LAST=st;
   var run=runs&&runs.length?runs[0]:null;
   var live=run&&(run.status==='in_progress'||run.status==='queued'||run.status==='waiting'||run.status==='requested'||run.status==='pending');
   activeId=live?run.id:null;
@@ -270,6 +272,61 @@ $('stop').addEventListener('click',function(){
   if(!activeId)return;var m=$('msg');m.className='msg mut';m.textContent='Arrêt demandé…';
   api('/api/cancel',{id:activeId}).then(function(j){m.className='msg '+(j.ok?'up':'down');m.textContent=j.ok?'Arrêt envoyé.':(j.error||'Échec de l’arrêt.');setTimeout(function(){refresh().catch(function(){})},4000)});
 });
+var LAST=null;
+function csvv(v){v=(v===undefined||v===null)?'':String(v);return /[;"\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}
+function csvl(a){return a.map(csvv).join(';')}
+function nb(n,d){return Number(n).toFixed(d===undefined?2:d).replace('.',',')}
+function iso(t){return new Date(t).toISOString().slice(0,19).replace('T',' ')}
+function releve(){
+  var st=LAST,b=$('dl');
+  if(!st||!st.updated){b.textContent='Aucune donnée à télécharger';setTimeout(function(){b.textContent='Télécharger le relevé'},2500);return}
+  var L=[];
+  L.push(csvl(['RELEVE ART_EURO ROBOT MT5 (compte demo)']));
+  L.push(csvl(['Genere le (UTC)',iso(Date.now())]));
+  L.push(csvl(['Session (numero GitHub)',st.run_id]));
+  L.push(csvl(['Debut de session (UTC)',iso(st.started)]));
+  L.push(csvl(['Derniere mesure (UTC)',iso(st.updated)]));
+  L.push(csvl(['Strategies',st.strategies]));
+  L.push(csvl(['Duree prevue (min)',st.minutes]));
+  L.push(csvl(['Equite de depart',nb(st.start_eq)]));
+  L.push(csvl(['Equite actuelle',nb(st.equity)]));
+  L.push(csvl(['Resultat',nb(st.equity-st.start_eq)]));
+  L.push(csvl(['Solde',nb(st.balance)]));
+  L.push(csvl(['Marches ouverts',st.opened+' / '+st.total]));
+  var ds=Object.keys(st.deals||{}).map(function(k){return st.deals[k]});
+  function tt(d){return d.time?d.time*1000:d.seen}
+  ds.sort(function(a,c){return tt(a)-tt(c)});
+  L.push('');L.push(csvl(['STATISTIQUES PAR STRATEGIE']));
+  L.push(csvl(['Strategie','Trades','Gagnants','Taux %','Net','Meilleur','Pire','Facteur de profit']));
+  var by={},all=[];
+  ds.forEach(function(d){(by[d.strat]||(by[d.strat]=[])).push(d.profit);all.push(d.profit)});
+  function srow(name,a){
+    var g=a.filter(function(x){return x>0}),lo=a.filter(function(x){return x<=0});
+    var gs=g.reduce(function(s,x){return s+x},0),ls=-lo.reduce(function(s,x){return s+x},0);
+    return csvl([name,a.length,g.length,a.length?nb(g.length/a.length*100,0):'',nb(a.reduce(function(s,x){return s+x},0)),nb(Math.max.apply(null,a)),nb(Math.min.apply(null,a)),ls>0?nb(gs/ls):'']);
+  }
+  Object.keys(by).forEach(function(k){L.push(srow(stratName(k),by[k]))});
+  if(all.length)L.push(srow('TOTAL',all));
+  else L.push(csvl(['Aucun trade ferme']));
+  L.push('');L.push(csvl(['POSITIONS OUVERTES']));
+  L.push(csvl(['Symbole','Sens','Strategie','Volume','Profit latent']));
+  (st.positions||[]).forEach(function(p){L.push(csvl([p.symbol,p.side,stratName(p.strat),nb(p.volume),nb(p.profit)]))});
+  L.push('');L.push(csvl(['TRADES FERMES (heure serveur MT5 si disponible, sinon ~UTC)']));
+  L.push(csvl(['Heure fermeture','Symbole','Sens','Strategie','Volume','Prix sortie','Profit net']));
+  ds.forEach(function(d){L.push(csvl([(d.time?'':'~')+iso(tt(d)),d.symbol,d.side,stratName(d.strat),d.volume===undefined?'':nb(d.volume),d.price===undefined?'':String(d.price).replace('.',','),nb(d.profit)]))});
+  L.push('');L.push(csvl(['COURBE D EQUITE (UTC)']));
+  L.push(csvl(['Heure','Equite']));
+  (st.history||[]).forEach(function(p){L.push(csvl([iso(p[0]),nb(p[1])]))});
+  L.push('');L.push(csvl(['JOURNAL DU ROBOT (dernieres lignes)']));
+  (st.log||[]).forEach(function(x){L.push(csvl([x]))});
+  var blob=new Blob(['\ufeff'+L.join('\r\n')],{type:'text/csv;charset=utf-8'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='releve-'+iso(Date.now()).replace(/[: ]/g,'-').slice(0,16)+'.csv';
+  document.body.appendChild(a);a.click();
+  setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},1500);
+}
+$('dl').addEventListener('click',releve);
 if(KEY){refresh().catch(function(){})}else{lock('')}
 })();
 </script></body></html>`;
