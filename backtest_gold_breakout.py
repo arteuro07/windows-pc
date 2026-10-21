@@ -45,6 +45,11 @@ def server_time(unix_ts):
     return dt.datetime.fromtimestamp(int(unix_ts), dt.timezone.utc).replace(tzinfo=None) + dt.timedelta(hours=UTC_OFFSET)
 
 
+def epoch_utc(naive_utc):
+    """Convert a naive datetime already expressed in UTC to Unix time without host-local timezone effects."""
+    return naive_utc.replace(tzinfo=dt.timezone.utc).timestamp()
+
+
 def clean_rates(rates):
     if rates is None:
         return []
@@ -63,10 +68,10 @@ def clean_rates(rates):
 def backtest_day(day, m1, m15):
     start = dt.datetime.combine(day, dt.time(0)) - dt.timedelta(hours=UTC_OFFSET)
     end = dt.datetime.combine(day, dt.time(CLOSE_H)) - dt.timedelta(hours=UTC_OFFSET)
-    day_m1 = [b for b in m1 if start.timestamp() <= b["time"] < end.timestamp()]
+    day_m1 = [b for b in m1 if epoch_utc(start) <= b["time"] < epoch_utc(end)]
     range_start = dt.datetime.combine(day, dt.time(RANGE_START_H)) - dt.timedelta(hours=UTC_OFFSET)
     range_end = dt.datetime.combine(day, dt.time(RANGE_END_H)) - dt.timedelta(hours=UTC_OFFSET)
-    range_bars = [b for b in m15 if range_start.timestamp() <= b["time"] < range_end.timestamp()]
+    range_bars = [b for b in m15 if epoch_utc(range_start) <= b["time"] < epoch_utc(range_end)]
     if len(range_bars) < MIN_RANGE_BARS:
         return {"date": str(day), "status": "skip_range_incomplet", "range_bars": len(range_bars)}
     hi = max(b["high"] for b in range_bars)
