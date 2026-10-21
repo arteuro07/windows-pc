@@ -135,10 +135,8 @@ def backtest_day(day, m1, m15):
         exit_price = last["close"] if side == 1 else last["close"] + SPREAD
         exit_reason = "time"
         exit_ts = last["time"]
-    # Exit prices are bid for BUY and ask for SELL. Spread is already represented by entry/exit side.
+    # Entry/exit sides already model the spread: BUY enters Ask/exits Bid; SELL enters Bid/exits Ask.
     pnl_price = (exit_price - entry) * side
-    # Conservative round-trip execution cost; spread is applied explicitly as an extra penalty.
-    pnl_price -= SPREAD
     r_mult = pnl_price / risk_price
     return {
         "date": str(day), "status": "trade", "side": "BUY" if side == 1 else "SELL",
