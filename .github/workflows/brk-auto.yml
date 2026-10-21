@@ -18,6 +18,7 @@ jobs:
       - name: Decider et lancer une session
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
         run: |
           M=$(python3 - <<'PY'
           from datetime import datetime, timezone, timedelta
