@@ -179,6 +179,7 @@ def summarize(trades):
 
 
 def main():
+    global SPREAD  # la sensibilité au spread ajuste temporairement cette configuration
     import MetaTrader5 as mt5
     start_day, end_day = parse_day(START), parse_day(END)
     if end_day < start_day:
