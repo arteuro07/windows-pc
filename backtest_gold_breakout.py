@@ -201,24 +201,38 @@ def main():
         log("ERREUR: connexion MT5 impossible")
         sys.exit(1)
     try:
+        terminal = mt5.terminal_info()
+        account = mt5.account_info()
+        log(f"Terminal MT5: {terminal}")
+        log(f"Compte MT5 connecté: {account is not None}; serveur={getattr(account, 'server', None) if account else None}")
+        all_symbols = mt5.symbols_get() or []
+        gold_candidates = [s.name for s in all_symbols if ("XAU" in s.name.upper() or "GOLD" in s.name.upper())]
+        log(f"Symboles contenant XAU/GOLD (premiers 30): {gold_candidates[:30]}")
         info = mt5.symbol_info(SYMBOL)
         if info is None:
-            candidates = [s.name for s in (mt5.symbols_get() or []) if s.name.upper().startswith(SYMBOL.upper())]
+            candidates = [s.name for s in all_symbols if s.name.upper().startswith(SYMBOL.upper())]
             if not candidates:
-                raise RuntimeError(f"Symbole introuvable: {SYMBOL}")
+                raise RuntimeError(f"Symbole introuvable: {SYMBOL}. Candidats or: {gold_candidates[:30]}")
             symbol = candidates[0]
         else:
             symbol = SYMBOL
-        mt5.symbol_select(symbol, True)
+        selected = mt5.symbol_select(symbol, True)
+        log(f"Symbole choisi={symbol}; symbol_select={selected}; info={mt5.symbol_info(symbol)}")
+        if not selected:
+            raise RuntimeError(f"Impossible d'activer le symbole {symbol}: {mt5.last_error()}")
         # UTC-aware datetimes: MT5 Python API expects UTC for historical requests.
         utc_start = dt.datetime.combine(start_day, dt.time(0), tzinfo=dt.timezone.utc) - dt.timedelta(hours=UTC_OFFSET)
         utc_end = dt.datetime.combine(end_day + dt.timedelta(days=1), dt.time(0), tzinfo=dt.timezone.utc) - dt.timedelta(hours=UTC_OFFSET)
         log(f"Backtest sans ordres: {symbol}, {START} -> {END}, offset serveur={UTC_OFFSET}h, spread={SPREAD}")
         m1 = clean_rates(mt5.copy_rates_range(symbol, mt5.TIMEFRAME_M1, utc_start, utc_end))
         m15 = clean_rates(mt5.copy_rates_range(symbol, mt5.TIMEFRAME_M15, utc_start, utc_end))
-        log(f"Historique reçu: M1={len(m1)} M15={len(m15)}")
+        log(f"Historique reçu: M1={len(m1)} M15={len(m15)}; erreur MT5 après requêtes={mt5.last_error()}")
+        if not m1 or not m15:
+            recent_m1 = mt5.copy_rates_from_pos(symbol, mt5.TIMEFRAME_M1, 0, 10)
+            recent_m15 = mt5.copy_rates_from_pos(symbol, mt5.TIMEFRAME_M15, 0, 10)
+            log(f"Test historique récent: M1={0 if recent_m1 is None else len(recent_m1)}; M15={0 if recent_m15 is None else len(recent_m15)}; erreur MT5={mt5.last_error()}")
         if len(m1) < 1000 or len(m15) < 100:
-            raise RuntimeError("Historique insuffisant. Vérifier le symbole et charger davantage d'historique dans MT5.")
+            raise RuntimeError("Historique insuffisant. Voir les lignes Terminal, Symboles, symbol_select et erreur MT5 ci-dessus.")
         days = []
         d = start_day
         while d <= end_day:
