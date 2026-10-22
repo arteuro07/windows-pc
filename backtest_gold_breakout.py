@@ -133,7 +133,8 @@ def backtest_day(day, m1, m15):
                 exit_ts = b["time"]
                 break
     if exit_price is None:
-        eligible = [b for b in day_m1 if b["time"] >= entry_time and b["time"] < close_time]
+        close_epoch = epoch_utc(close_time)
+        eligible = [b for b in day_m1 if b["time"] >= entry_time and b["time"] < close_epoch]
         if not eligible:
             return {"date": str(day), "status": "skip_no_exit_data"}
         last = eligible[-1]
