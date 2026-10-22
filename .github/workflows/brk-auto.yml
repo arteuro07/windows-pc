@@ -23,7 +23,7 @@ jobs:
           M=$(python3 - <<'PY'
           from datetime import datetime, timezone, timedelta
           from zoneinfo import ZoneInfo
-          START, END = 6 * 60 + 20, 19 * 60
+          START, END = 6 * 60 + 20, 18 * 60
           now = datetime.now(timezone.utc)
           srv = now.astimezone(ZoneInfo("America/New_York")).replace(tzinfo=None) + timedelta(hours=7)
           m = srv.hour * 60 + srv.minute
