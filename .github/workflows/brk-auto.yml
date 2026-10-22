@@ -36,5 +36,5 @@ jobs:
           ACTIVE=$(gh run list --workflow mt5.yml --limit 10 --json status -q '[.[] | select(.status=="in_progress" or .status=="queued" or .status=="waiting" or .status=="pending" or .status=="requested")] | length')
           echo "sessions deja actives : $ACTIVE"
           if [ "$ACTIVE" -gt 0 ]; then exit 0; fi
-          gh workflow run mt5.yml --ref main -f minutes=$M -f categories=Metals -f strategies=brk
+          gh workflow run mt5.yml --ref main -f minutes=$M
           echo "session lancee : $M min"
