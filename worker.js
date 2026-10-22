@@ -163,6 +163,98 @@ pre::-webkit-scrollbar{width:6px}pre::-webkit-scrollbar-thumb{background:var(--l
 }
 @media(prefers-reduced-motion:reduce){.card{transition:none}}
 
+
+/* EURO PC — Style Pro premium, transitions et cartes interactives */
+:root{
+  --bg:#070b13;--bg2:#0b1220;--panel:#101a2b;--panel2:#142239;
+  --line:#22324a;--line2:#314662;--ink:#f1f6ff;--mut:#91a2bb;
+  --gold:#70b7ff;--gold2:#3578df;--r:20px;color-scheme:dark
+}
+body{
+  background:
+    radial-gradient(900px 420px at 82% -8%,#163b69 0%,transparent 68%),
+    radial-gradient(720px 380px at -12% 28%,#102b4b 0%,transparent 70%),
+    var(--bg);
+}
+.brand{letter-spacing:.16em}
+.brand::before{
+  box-shadow:0 0 26px #55aaff55;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 26'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop stop-color='%2399d7ff'/%3E%3Cstop offset='1' stop-color='%233578df'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='26' height='26' rx='8' fill='url(%23g)'/%3E%3Cpath d='M5.5 18 L10 12.5 L13.5 15.5 L20.5 7.5' fill='none' stroke='%23081322' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='20.5' cy='7.5' r='2' fill='%23081322'/%3E%3C/svg%3E")
+}
+#main::before{
+  content:"EURO PC  /  TRADING INTELLIGENCE";
+  grid-column:1/-1;
+  display:flex;align-items:flex-end;min-height:112px;
+  padding:24px 26px;border:1px solid #28466a;border-radius:22px;
+  color:#f4f8ff;font-size:clamp(20px,3vw,30px);font-weight:800;
+  letter-spacing:-.035em;
+  background:
+    linear-gradient(90deg,#081321f5 0%,#0a1b30e8 50%,#102a48aa 100%),
+    radial-gradient(circle at 82% 25%,#3e8bd866,transparent 36%);
+  box-shadow:0 20px 55px -34px #4c9cff88,inset 0 1px #ffffff12;
+}
+#main::after{
+  content:"Analyse · Stratégies · Performance";
+  grid-column:1/-1;grid-row:1;
+  align-self:end;justify-self:start;
+  padding:0 26px 15px;color:#9bb9db;font-size:12px;letter-spacing:.08em;
+  pointer-events:none;
+}
+#main>section:nth-of-type(1){border-color:#29466a}
+.card{
+  background:linear-gradient(155deg,#121e30 0%,#0d1625 100%);
+  border-color:#243650;
+  box-shadow:0 1px 0 #ffffff09 inset,0 18px 44px -28px #000b;
+  transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease,background .22s ease;
+}
+.card:hover{
+  transform:translateY(-3px);border-color:#4776aa;
+  box-shadow:0 1px 0 #ffffff0c inset,0 22px 46px -28px #000,0 0 24px -18px #58aaff88;
+  background:linear-gradient(155deg,#15243a 0%,#0d1727 100%);
+}
+.card:first-child{
+  background:radial-gradient(120% 90% at 0% 0%,#17345a 0%,transparent 58%),linear-gradient(155deg,#121e30,#0d1625);
+  border-color:#315783;
+}
+.big{
+  background:linear-gradient(180deg,#fff 0%,#b9dcff 100%);
+  -webkit-background-clip:text;background-clip:text;
+}
+h2::before{background:linear-gradient(#91d1ff,#3578df)}
+.ln.u{stroke:#56d6a0;filter:drop-shadow(0 0 5px #56d6a066)}
+.area.u{fill:#56d6a0}
+.dot.u{fill:#56d6a0;filter:drop-shadow(0 0 6px #56d6a0)}
+.chip.on,.btn:not(.stop){
+  background:linear-gradient(135deg,#9ad8ff,#4b9af0 58%,#3578df);
+  border-color:#8bcaff;color:#061426;
+  box-shadow:0 10px 26px -15px #55aaffdd;
+}
+.btn{transition:transform .18s ease,box-shadow .18s ease,filter .18s ease}
+.btn:not([disabled]):hover{filter:brightness(1.08);box-shadow:0 12px 30px -14px #55aaffcc}
+.btn.stop{background:#ff6b5e12;color:var(--down);border-color:#ff6b5e66}
+#dl{color:#a7d7ff!important;border-color:#355476!important}
+.row{
+  border-color:#243650;
+  background:linear-gradient(145deg,#111c2c,#0c1523);
+  transition:transform .18s ease,border-color .18s ease,background .18s ease;
+}
+.row:hover{transform:translateX(3px);border-color:#4776aa;background:linear-gradient(145deg,#17273d,#0e1a2b)}
+.stats>div{background:linear-gradient(145deg,#15243a,#101a2a);border-color:#263a56;transition:border-color .2s,transform .2s}
+.stats>div:hover{border-color:#4776aa;transform:translateY(-2px)}
+pre{background:#08111d;border-color:#233752;color:#a8d9ff}
+input[type=password]{background:#0a1423;border-color:#314662}
+.pill{background:#0b1422dd;border-color:#314662}
+.pill.run{background:#0b211bdd;border-color:#1f684d}
+@media(max-width:760px){
+  #main::before{min-height:86px;padding:20px;font-size:21px}
+  #main::after{padding:0 20px 12px;font-size:10px}
+  .card:hover,.stats>div:hover,.row:hover{transform:none}
+}
+@media(prefers-reduced-motion:reduce){
+  .card,.row,.stats>div,.btn{transition:none!important}
+  .card:hover,.stats>div:hover,.row:hover{transform:none!important}
+}
+
 </style></head><body>
 <div class="wrap">
   <header class="top">
