@@ -255,6 +255,125 @@ input[type=password]{background:#0a1423;border-color:#314662}
   .card:hover,.stats>div:hover,.row:hover{transform:none!important}
 }
 
+
+/* EURO PC // XENOTECH HUD — interface alien animée, sans toucher aux API */
+:root{
+ --x-cyan:#55f6e5;--x-blue:#55aaff;--x-violet:#a58bff;
+ --x-glow:rgba(85,246,229,.22);--x-line:#214c5b;
+}
+html{scroll-behavior:smooth}
+body{
+ overflow-x:hidden;
+ background:
+  radial-gradient(ellipse at 50% -20%,rgba(37,115,151,.34),transparent 52%),
+  radial-gradient(ellipse at 95% 36%,rgba(91,49,164,.17),transparent 38%),
+  radial-gradient(ellipse at 0% 72%,rgba(17,147,140,.13),transparent 40%),
+  #050912;
+}
+body::before{
+ content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+ background-image:
+  linear-gradient(rgba(85,246,229,.035) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(85,246,229,.035) 1px,transparent 1px),
+  radial-gradient(circle,rgba(166,227,255,.62) .7px,transparent 1px);
+ background-size:36px 36px,36px 36px,83px 83px;
+ background-position:center center,center center,12px 7px;
+ mask-image:linear-gradient(to bottom,black,transparent 88%);
+ animation:x-grid-drift 32s linear infinite;
+}
+body::after{
+ content:"";position:fixed;inset:0;z-index:8;pointer-events:none;opacity:.13;
+ background:repeating-linear-gradient(to bottom,transparent 0 3px,rgba(115,238,255,.10) 4px,transparent 5px);
+ animation:x-scan 12s linear infinite;
+}
+@keyframes x-grid-drift{to{background-position:center 36px,center 36px,95px 90px}}
+@keyframes x-scan{0%{transform:translateY(-8%)}100%{transform:translateY(8%)}}
+.top{isolation:isolate}
+.brand{position:relative;color:#e7fdff;text-shadow:0 0 18px rgba(85,246,229,.28)}
+.brand::before{
+ border-radius:50%;outline:1px solid rgba(85,246,229,.65);outline-offset:3px;
+ background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 26'%3E%3Cdefs%3E%3CradialGradient id='g'%3E%3Cstop stop-color='%23efffff'/%3E%3Cstop offset='.45' stop-color='%2355f6e5'/%3E%3Cstop offset='1' stop-color='%233578df'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='13' cy='13' r='12' fill='%23091420' stroke='%2355f6e5' stroke-width='.7'/%3E%3Cpath d='M13 4 16 10 22 13 16 16 13 22 10 16 4 13 10 10Z' fill='url(%23g)'/%3E%3Ccircle cx='13' cy='13' r='2' fill='%23091420'/%3E%3C/svg%3E");
+ animation:x-emblem 16s linear infinite;
+}
+@keyframes x-emblem{to{transform:rotate(360deg)}}
+.pill{border-color:#2b6570;box-shadow:inset 0 0 14px rgba(85,246,229,.035)}
+.pill.run{box-shadow:0 0 18px rgba(61,220,151,.10),inset 0 0 12px rgba(61,220,151,.06)}
+#main::before{
+ position:relative;overflow:hidden;isolation:isolate;
+ min-height:150px;padding:32px clamp(20px,4vw,40px);
+ border-color:rgba(85,246,229,.46);
+ background:
+  radial-gradient(ellipse at 78% 50%,rgba(85,246,229,.12),transparent 31%),
+  linear-gradient(110deg,rgba(6,20,34,.98),rgba(10,20,42,.96) 58%,rgba(28,21,57,.88));
+ box-shadow:0 0 0 1px rgba(85,246,229,.05),0 18px 70px -38px rgba(85,246,229,.4),inset 0 1px rgba(255,255,255,.08);
+ text-shadow:0 0 22px rgba(85,246,229,.16);
+}
+#main::before{
+ background-image:
+  linear-gradient(110deg,transparent 0 57%,rgba(85,246,229,.055) 57.2%,transparent 57.5%),
+  radial-gradient(ellipse at 82% 50%,rgba(85,246,229,.14),transparent 28%),
+  linear-gradient(110deg,rgba(6,20,34,.98),rgba(10,20,42,.96) 58%,rgba(28,21,57,.88));
+}
+#main::after{color:#83f5eb;letter-spacing:.14em;text-transform:uppercase}
+.card{
+ position:relative;isolation:isolate;overflow:hidden;
+ border-color:rgba(73,124,151,.43);
+ background:linear-gradient(145deg,rgba(16,30,47,.96),rgba(8,16,29,.97));
+ box-shadow:0 1px 0 rgba(255,255,255,.055) inset,0 16px 45px -32px #000,0 0 0 1px rgba(85,246,229,.015);
+}
+.card::after{
+ content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;border-radius:inherit;
+ background:linear-gradient(115deg,transparent 10%,rgba(85,246,229,.055) 46%,transparent 58%);
+ transform:translateX(-130%);transition:transform .75s cubic-bezier(.2,.7,.2,1);
+}
+.card:hover::after{transform:translateX(130%)}
+.card:hover{
+ border-color:rgba(85,246,229,.62);
+ box-shadow:0 1px 0 rgba(255,255,255,.08) inset,0 20px 55px -34px #000,0 0 28px -17px rgba(85,246,229,.30);
+}
+.card:first-child{
+ background:radial-gradient(ellipse at 4% 0%,rgba(85,246,229,.14),transparent 58%),linear-gradient(145deg,rgba(15,35,52,.98),rgba(8,16,29,.98));
+ border-color:rgba(85,246,229,.47);
+}
+.lbl{color:#8caebd;letter-spacing:.18em}
+h2::before{background:linear-gradient(#a58bff,#55f6e5);box-shadow:0 0 12px rgba(85,246,229,.55)}
+.big{
+ background:linear-gradient(180deg,#ffffff 0%,#b6fff7 56%,#77aaff 100%);
+ -webkit-background-clip:text;background-clip:text;
+ filter:drop-shadow(0 0 18px rgba(85,246,229,.12));
+}
+.kpis{border-top-color:rgba(85,246,229,.17)}
+.row{
+ border-color:rgba(73,124,151,.36);
+ background:linear-gradient(110deg,rgba(14,29,45,.96),rgba(8,16,29,.96));
+}
+.row:hover{border-color:rgba(85,246,229,.65);box-shadow:0 0 22px -14px rgba(85,246,229,.42)}
+.stats>div{background:linear-gradient(145deg,rgba(20,39,59,.9),rgba(9,18,31,.95));border-color:rgba(73,124,151,.38)}
+.stats>div:hover{border-color:rgba(165,139,255,.7);box-shadow:0 0 20px -14px rgba(165,139,255,.7)}
+.chip{border-color:#294958;background:rgba(8,21,34,.82)}
+.chip.on,.btn:not(.stop){
+ background:linear-gradient(115deg,#a7fff5,#55f6e5 42%,#64aaff);
+ border-color:#a7fff5;color:#04121c;
+ box-shadow:0 0 22px -10px rgba(85,246,229,.85),inset 0 1px rgba(255,255,255,.7);
+}
+.btn:not([disabled]):hover{box-shadow:0 0 30px -9px rgba(85,246,229,.7);filter:brightness(1.08)}
+.btn.stop{background:rgba(255,107,94,.07);border-color:rgba(255,107,94,.48)}
+pre{border-color:#214b5b;box-shadow:inset 0 0 22px rgba(85,246,229,.035);color:#9fffea}
+input[type=password]{border-color:#315a6a}
+.pill.run i{box-shadow:0 0 12px rgba(61,220,151,.9)}
+.foot a{color:#75f5e7;border-bottom-color:rgba(85,246,229,.45)}
+@media(max-width:760px){
+ body::after{opacity:.075}
+ #main::before{min-height:100px;padding:22px 18px;font-size:clamp(18px,5vw,23px)}
+ #main::after{padding:0 18px 13px;font-size:9px;letter-spacing:.09em}
+ .card:hover::after{transform:none}
+}
+@media(prefers-reduced-motion:reduce){
+ html{scroll-behavior:auto}
+ body::before,body::after,.brand::before{animation:none!important}
+ .card::after{display:none}
+}
+
 </style></head><body>
 <div class="wrap">
   <header class="top">
