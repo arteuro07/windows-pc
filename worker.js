@@ -107,6 +107,62 @@ pre::-webkit-scrollbar{width:6px}pre::-webkit-scrollbar-thumb{background:var(--l
 .foot a{color:var(--gold);text-decoration:none;border-bottom:1px solid #e3b55955}
 #lock{margin-top:12vh;text-align:center}
 #lock .lbl{font-size:11px}
+
+/* ART_EURO UI refresh: responsive desktop dashboard + mobile polish */
+:root{--r:18px}
+.wrap{max-width:1180px;gap:20px}
+.top{position:relative;padding:12px 4px 8px;min-height:58px}
+.brand{font-size:14px;letter-spacing:.28em}
+.pill{backdrop-filter:blur(12px)}
+.card{padding:clamp(16px,2.2vw,24px);border-radius:18px;transition:border-color .18s,transform .18s}
+.card:hover{border-color:#343d40}
+#main{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));align-items:start;gap:20px}
+#main>section:nth-of-type(1){grid-column:span 7}
+#main>section:nth-of-type(2){grid-column:span 5}
+#main>section:nth-of-type(3),#main>section:nth-of-type(4){grid-column:span 6;min-width:0}
+#main>section:nth-of-type(5){grid-column:span 7;min-width:0}
+#main>section:nth-of-type(6){grid-column:span 5;min-width:0}
+#main>section:nth-of-type(7),#main>.foot{grid-column:1/-1;min-width:0}
+#main>section:nth-of-type(1) .big{font-size:clamp(36px,4vw,52px)}
+#main>section:nth-of-type(2) svg{max-height:190px}
+#main>section:nth-of-type(5) table{border-collapse:separate;border-spacing:0}
+#main>section:nth-of-type(5) th{padding:10px 8px}
+#main>section:nth-of-type(5) td{padding:12px 8px}
+#main>section:nth-of-type(5) th:first-child,#main>section:nth-of-type(5) td:first-child{padding-left:0}
+#main>section:nth-of-type(6) .chips{gap:9px}
+#main>section:nth-of-type(6) .chip{flex:0 0 auto}
+.row{min-width:0;gap:10px}
+.row>div{min-width:0}
+.row>div:nth-child(2){overflow-wrap:anywhere}
+.foot{padding:14px 0 4px}
+@media(min-width:1100px){
+  body{padding-left:28px;padding-right:28px}
+  .top{margin-bottom:2px}
+  #main{gap:22px}
+  #main>section:nth-of-type(1),#main>section:nth-of-type(2){min-height:220px}
+}
+@media(max-width:760px){
+  .wrap{max-width:560px;gap:16px}
+  #main{display:flex;flex-direction:column;gap:16px}
+  #main>section,#main>.foot{width:100%}
+  .top{position:relative;padding:6px 2px 2px;min-height:0}
+  .card{padding:17px;border-radius:16px}
+}
+@media(max-width:390px){
+  body{padding-left:12px;padding-right:12px}
+  .brand{letter-spacing:.2em}
+  .pill{padding:6px 9px;font-size:10px}
+  .kpis>div{padding:0 8px}
+  .kpis b{font-size:14px}
+  .row{grid-template-columns:minmax(0,1fr) auto;gap:7px;padding:11px}
+  .row>div:nth-child(2){grid-column:1;grid-row:2}
+  .row .pl{grid-column:2;grid-row:1/3;align-self:center;min-width:58px;font-size:12px}
+  .stats>div{padding:10px}
+  .stats b{font-size:16px}
+  .chip{padding:8px 12px;min-height:38px;font-size:12px}
+}
+@media(prefers-reduced-motion:reduce){.card{transition:none}}
+
 </style></head><body>
 <div class="wrap">
   <header class="top">
