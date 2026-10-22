@@ -224,15 +224,35 @@ def main():
         utc_start = dt.datetime.combine(start_day, dt.time(0), tzinfo=dt.timezone.utc) - dt.timedelta(hours=UTC_OFFSET)
         utc_end = dt.datetime.combine(end_day + dt.timedelta(days=1), dt.time(0), tzinfo=dt.timezone.utc) - dt.timedelta(hours=UTC_OFFSET)
         log(f"Backtest sans ordres: {symbol}, {START} -> {END}, offset serveur={UTC_OFFSET}h, spread={SPREAD}")
-        m1 = clean_rates(mt5.copy_rates_range(symbol, mt5.TIMEFRAME_M1, utc_start, utc_end))
-        m15 = clean_rates(mt5.copy_rates_range(symbol, mt5.TIMEFRAME_M15, utc_start, utc_end))
-        log(f"Historique reçu: M1={len(m1)} M15={len(m15)}; erreur MT5 après requêtes={mt5.last_error()}")
-        if not m1 or not m15:
+        # Télécharger par tranches mensuelles plutôt qu'une seule requête de presque cinq ans.
+        # Cela évite les requêtes trop grandes et permet d'identifier la première période indisponible.
+        m1_by_time = {}
+        m15_by_time = {}
+        cursor = start_day.replace(day=1)
+        while cursor <= end_day:
+            next_month = (cursor.replace(day=28) + dt.timedelta(days=4)).replace(day=1)
+            chunk_start = max(cursor, start_day)
+            chunk_end = min(next_month, end_day + dt.timedelta(days=1))
+            a = dt.datetime.combine(chunk_start, dt.time(0), tzinfo=dt.timezone.utc) - dt.timedelta(hours=UTC_OFFSET)
+            b = dt.datetime.combine(chunk_end, dt.time(0), tzinfo=dt.timezone.utc) - dt.timedelta(hours=UTC_OFFSET)
+            rates1 = clean_rates(mt5.copy_rates_range(symbol, mt5.TIMEFRAME_M1, a, b))
+            err1 = mt5.last_error()
+            rates15 = clean_rates(mt5.copy_rates_range(symbol, mt5.TIMEFRAME_M15, a, b))
+            err15 = mt5.last_error()
+            log(f"Tranche {chunk_start} -> {chunk_end}: M1={len(rates1)} (err={err1}); M15={len(rates15)} (err={err15})")
+            for rate in rates1:
+                m1_by_time[rate["time"]] = rate
+            for rate in rates15:
+                m15_by_time[rate["time"]] = rate
+            cursor = next_month
+        m1 = [m1_by_time[k] for k in sorted(m1_by_time)]
+        m15 = [m15_by_time[k] for k in sorted(m15_by_time)]
+        log(f"Historique total: M1={len(m1)} M15={len(m15)}; dernière erreur MT5={mt5.last_error()}")
+        if len(m1) < 1000 or len(m15) < 100:
             recent_m1 = mt5.copy_rates_from_pos(symbol, mt5.TIMEFRAME_M1, 0, 10)
             recent_m15 = mt5.copy_rates_from_pos(symbol, mt5.TIMEFRAME_M15, 0, 10)
             log(f"Test historique récent: M1={0 if recent_m1 is None else len(recent_m1)}; M15={0 if recent_m15 is None else len(recent_m15)}; erreur MT5={mt5.last_error()}")
-        if len(m1) < 1000 or len(m15) < 100:
-            raise RuntimeError("Historique insuffisant. Voir les lignes Terminal, Symboles, symbol_select et erreur MT5 ci-dessus.")
+            raise RuntimeError("Historique insuffisant après téléchargement par mois. Consulte les lignes 'Tranche' : elles indiquent les périodes que MT5 fournit réellement.")
         days = []
         d = start_day
         while d <= end_day:
