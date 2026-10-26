@@ -70,9 +70,11 @@ def run_backtest(rows: list[dict[str, Any]], risk_fraction: float = 0.0025) -> d
         if risk_per_unit <= 0:
             i += 1
             continue
-        # Keep the original stop distance around the next-open fill.
+        # Preserve the stop reference, then calculate the target from the actual
+        # next-open entry so the tested reward/risk ratio matches the real fill.
         stop = stop_ref
-        target = entry + (abs(target_ref - float(signal["entry_reference"])) if side == "BUY" else -abs(float(signal["entry_reference"]) - target_ref))
+        reward_risk = 1.8
+        target = entry + reward_risk * risk_per_unit if side == "BUY" else entry - reward_risk * risk_per_unit
         if side == "BUY" and (stop >= entry or target <= entry):
             i += 1
             continue
